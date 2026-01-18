@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneWay - One-way WhatsApp for focused work</title>
+  <meta name="description" content="A Terminal UI app that lets you send WhatsApp messages without the distraction of incoming notifications. Tech detox mode for focused work.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            terminal: {
+              bg: '#0d1117',
+              surface: '#161b22',
+              border: '#30363d',
+              text: '#c9d1d9',
+              muted: '#8b949e',
+              green: '#3fb950',
+              blue: '#58a6ff',
+              purple: '#a371f7',
+            }
+          },
+          fontFamily: {
+            mono: ['JetBrains Mono', 'SF Mono', 'Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #3fb950 0%, #58a6ff 50%, #a371f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .terminal-window {
+      box-shadow: 0 0 0 1px rgba(48, 54, 61, 0.5), 0 16px 32px rgba(0, 0, 0, 0.4);
+    }
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+    .cursor-blink {
+      animation: blink 1s infinite;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .animate-fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+  </style>
+</head>
+<body class="bg-terminal-bg text-terminal-text min-h-screen">
+
+  <!-- Hero Section -->
+  <header class="min-h-screen flex flex-col justify-center items-center px-6 py-20">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="opacity-0 animate-fade-in-up">
+        <span class="text-terminal-green font-semibold text-sm tracking-wider uppercase mb-4 block">Terminal UI App</span>
+        <h1 class="text-5xl md:text-7xl font-bold mb-6">
+          <span class="gradient-text">OneWay</span>
+        </h1>
+        <p class="text-xl md:text-2xl text-terminal-muted mb-8">
+          One-way WhatsApp for focused work
+        </p>
+      </div>
+
+      <!-- Terminal Demo -->
+      <div class="terminal-window bg-terminal-surface rounded-lg overflow-hidden max-w-2xl mx-auto mb-12 opacity-0 animate-fade-in-up delay-200">
+        <div class="flex items-center gap-2 px-4 py-3 bg-terminal-border/50">
+          <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+          <span class="text-terminal-muted text-sm ml-2">oneway</span>
+        </div>
+        <div class="p-6 text-left text-sm md:text-base">
+          <div class="text-terminal-muted mb-2">$ oneway</div>
+          <div class="mb-4">
+            <span class="text-terminal-green">?</span> What would you like to do?
+          </div>
+          <div class="pl-4 space-y-1">
+            <div class="text-terminal-blue">&gt; Send Message</div>
+            <div class="text-terminal-muted">&nbsp; Search History</div>
+            <div class="text-terminal-muted">&nbsp; Exit</div>
+          </div>
+          <div class="mt-4 flex items-center">
+            <span class="text-terminal-green">_</span>
+            <span class="w-2 h-5 bg-terminal-text ml-1 cursor-blink"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="opacity-0 animate-fade-in-up delay-300">
+        <a href="https://github.com/sudomakes/oneway" target="_blank" rel="noopener"
+           class="inline-flex items-center gap-2 px-6 py-3 bg-terminal-surface border border-terminal-border rounded-lg hover:border-terminal-green transition-colors">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-terminal-muted animate-bounce">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- Problem Section -->
+  <section class="py-24 px-6 border-t border-terminal-border">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center">
+        <span class="text-terminal-muted">//</span> The Problem
+      </h2>
+      <div class="bg-terminal-surface border border-terminal-border rounded-lg p-8 md:p-12">
+        <p class="text-lg md:text-xl text-terminal-muted leading-relaxed mb-6">
+          Every WhatsApp notification is an interruption. Every message preview pulls your focus.
+          Every "quick reply" turns into a 20-minute conversation.
+        </p>
+        <p class="text-lg md:text-xl text-terminal-text leading-relaxed">
+          You need to <span class="text-terminal-green">send messages</span> for work.
+          You don't need to be <span class="text-red-400">constantly available</span>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solution Section -->
+  <section class="py-24 px-6 border-t border-terminal-border">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center">
+        <span class="text-terminal-muted">//</span> The Solution
+      </h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6">
+          <div class="text-terminal-green text-2xl mb-3">OUT</div>
+          <h3 class="text-xl font-semibold mb-2">Messages go out</h3>
+          <p class="text-terminal-muted">
+            Send messages to contacts and groups. Search your message history. Stay connected on your terms.
+          </p>
+        </div>
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6">
+          <div class="text-red-400 text-2xl mb-3 line-through opacity-50">IN</div>
+          <h3 class="text-xl font-semibold mb-2">Nothing comes in</h3>
+          <p class="text-terminal-muted">
+            No notifications. No message previews. No real-time updates. Check WhatsApp when <em>you</em> decide to.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-24 px-6 border-t border-terminal-border">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
+        <span class="text-terminal-muted">//</span> Features
+      </h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6 hover:border-terminal-green transition-colors">
+          <div class="text-2xl mb-3">&#x1F4E4;</div>
+          <h3 class="font-semibold mb-2">Send Messages</h3>
+          <p class="text-terminal-muted text-sm">Send to contacts and groups with a simple keyboard-driven interface</p>
+        </div>
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6 hover:border-terminal-blue transition-colors">
+          <div class="text-2xl mb-3">&#x1F50D;</div>
+          <h3 class="font-semibold mb-2">Search History</h3>
+          <p class="text-terminal-muted text-sm">Find past messages quickly with full-text search</p>
+        </div>
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6 hover:border-terminal-purple transition-colors">
+          <div class="text-2xl mb-3">&#x1F6AB;</div>
+          <h3 class="font-semibold mb-2">Zero Notifications</h3>
+          <p class="text-terminal-muted text-sm">No incoming message listeners. True tech detox mode.</p>
+        </div>
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6 hover:border-terminal-green transition-colors">
+          <div class="text-2xl mb-3">&#x26A1;</div>
+          <h3 class="font-semibold mb-2">Keyboard First</h3>
+          <p class="text-terminal-muted text-sm">Navigate everything with arrow keys, no mouse needed</p>
+        </div>
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6 hover:border-terminal-blue transition-colors">
+          <div class="text-2xl mb-3">&#x1F4BE;</div>
+          <h3 class="font-semibold mb-2">Local Storage</h3>
+          <p class="text-terminal-muted text-sm">SQLite database keeps your data on your machine</p>
+        </div>
+        <div class="bg-terminal-surface border border-terminal-border rounded-lg p-6 hover:border-terminal-purple transition-colors">
+          <div class="text-2xl mb-3">&#x1F510;</div>
+          <h3 class="font-semibold mb-2">Scan Once</h3>
+          <p class="text-terminal-muted text-sm">Session persists after initial QR code scan</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Philosophy Section -->
+  <section class="py-24 px-6 border-t border-terminal-border">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold mb-8 text-center">
+        <span class="text-terminal-muted">//</span> Philosophy
+      </h2>
+      <div class="bg-terminal-surface border border-terminal-border rounded-lg p-8 md:p-12">
+        <blockquote class="text-lg md:text-xl leading-relaxed mb-6">
+          <span class="text-terminal-green">"</span>
+          The absence of incoming message listeners isn't a missing feature &mdash; it's the entire point.
+          <span class="text-terminal-green">"</span>
+        </blockquote>
+        <p class="text-terminal-muted leading-relaxed mb-4">
+          Most apps try to maximize your engagement. OneWay does the opposite.
+          It gives you just enough WhatsApp to stay functional, without the constant dopamine hits of new message notifications.
+        </p>
+        <p class="text-terminal-muted leading-relaxed">
+          This is <span class="text-terminal-text">intentional friction</span>.
+          When you need to check messages, open the real app.
+          When you need to send something and get back to work, use OneWay.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section class="py-24 px-6 border-t border-terminal-border">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
+        <span class="text-terminal-muted">//</span> Built With
+      </h2>
+      <div class="flex flex-wrap justify-center gap-4">
+        <span class="px-4 py-2 bg-terminal-surface border border-terminal-border rounded-lg text-sm">
+          <span class="text-terminal-green">Bun</span> runtime
+        </span>
+        <span class="px-4 py-2 bg-terminal-surface border border-terminal-border rounded-lg text-sm">
+          <span class="text-terminal-blue">Ink</span> (React for terminals)
+        </span>
+        <span class="px-4 py-2 bg-terminal-surface border border-terminal-border rounded-lg text-sm">
+          <span class="text-terminal-purple">whatsapp-web.js</span>
+        </span>
+        <span class="px-4 py-2 bg-terminal-surface border border-terminal-border rounded-lg text-sm">
+          <span class="text-terminal-green">SQLite</span> via bun:sqlite
+        </span>
+        <span class="px-4 py-2 bg-terminal-surface border border-terminal-border rounded-lg text-sm">
+          <span class="text-terminal-blue">TypeScript</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start Section -->
+  <section class="py-24 px-6 border-t border-terminal-border">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">
+        <span class="text-terminal-muted">//</span> Quick Start
+      </h2>
+      <div class="terminal-window bg-terminal-surface rounded-lg overflow-hidden max-w-2xl mx-auto">
+        <div class="flex items-center gap-2 px-4 py-3 bg-terminal-border/50">
+          <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+          <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+          <span class="text-terminal-muted text-sm ml-2">terminal</span>
+        </div>
+        <div class="p-6 text-left text-sm">
+          <div class="text-terminal-muted mb-1"># Clone and install</div>
+          <div class="mb-4">
+            <span class="text-terminal-green">$</span> git clone https://github.com/sudomakes/oneway.git<br>
+            <span class="text-terminal-green">$</span> cd oneway<br>
+            <span class="text-terminal-green">$</span> bun install<br>
+            <span class="text-terminal-green">$</span> bun link
+          </div>
+          <div class="text-terminal-muted mb-1"># Run from anywhere</div>
+          <div>
+            <span class="text-terminal-green">$</span> oneway
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 px-6 border-t border-terminal-border">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="flex justify-center gap-6 mb-6">
+        <a href="https://github.com/sudomakes/oneway" target="_blank" rel="noopener"
+           class="text-terminal-muted hover:text-terminal-text transition-colors">
+          GitHub
+        </a>
+        <a href="https://github.com/sudomakes/oneway/issues" target="_blank" rel="noopener"
+           class="text-terminal-muted hover:text-terminal-text transition-colors">
+          Issues
+        </a>
+        <a href="https://github.com/sudomakes/oneway#readme" target="_blank" rel="noopener"
+           class="text-terminal-muted hover:text-terminal-text transition-colors">
+          Docs
+        </a>
+      </div>
+      <p class="text-terminal-muted text-sm">
+        MIT License &middot; Made for focused work
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

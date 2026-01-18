@@ -1,5 +1,6 @@
 import { getClient } from '../whatsapp/client';
 import { getChatByName } from '../db/chats';
+import { applyMessageSuffix } from '../utils/config';
 
 interface SendResult {
   success: boolean;
@@ -47,9 +48,12 @@ export async function sendMessage(recipient: string, message: string): Promise<S
 
   console.log(`Sending to chatId: ${chatId}`);
 
+  // Apply message suffix from config
+  const messageWithSuffix = applyMessageSuffix(message);
+
   try {
     // Use sendSeen: false to avoid markedUnread error
-    const sentMsg = await client.sendMessage(chatId, message, {
+    const sentMsg = await client.sendMessage(chatId, messageWithSuffix, {
       sendSeen: false,
     });
 

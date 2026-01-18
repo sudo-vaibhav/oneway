@@ -1,0 +1,8 @@
+{
+  // OneWay Configuration
+  // JSONC format - comments are allowed
+
+  // Message suffix appended to all outgoing messages
+  // Set to empty string "" to disable
+  "messageSuffix": "\n\n- sent via https://oneway.sudomakes.art"
+}

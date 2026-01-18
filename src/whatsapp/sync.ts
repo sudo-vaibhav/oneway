@@ -5,6 +5,17 @@ import chalk from 'chalk';
 
 const SYNC_DAYS_LIMIT = 30;
 
+export interface SyncProgress {
+  status: 'idle' | 'syncing' | 'done' | 'error';
+  currentChat: number;
+  totalChats: number;
+  messageCount: number;
+  chatName?: string;
+  error?: string;
+}
+
+export type SyncProgressCallback = (progress: SyncProgress) => void;
+
 function clearLine(): void {
   process.stdout.write('\r\x1b[K');
 }
@@ -93,4 +104,100 @@ export async function syncMessages(): Promise<{ chatCount: number; messageCount:
   console.log(chalk.green(`\n  Synced ${totalSynced} messages from ${chats.length} chats\n`));
 
   return { chatCount: chats.length, messageCount: totalSynced };
+}
+
+/**
+ * Background sync that reports progress via callback (non-blocking)
+ */
+export async function syncMessagesBackground(
+  onProgress?: SyncProgressCallback
+): Promise<{ chatCount: number; messageCount: number }> {
+  const reportProgress = (progress: SyncProgress) => {
+    if (onProgress) {
+      onProgress(progress);
+    }
+  };
+
+  reportProgress({
+    status: 'syncing',
+    currentChat: 0,
+    totalChats: 0,
+    messageCount: 0,
+  });
+
+  try {
+    const client = getClient();
+    const chats = await client.getChats();
+
+    const latestTimestamp = getLatestMessageTimestamp();
+    const thirtyDaysAgo = Math.floor(Date.now() / 1000) - (SYNC_DAYS_LIMIT * 24 * 60 * 60);
+    const cutoffTimestamp = latestTimestamp && latestTimestamp > thirtyDaysAgo
+      ? latestTimestamp
+      : thirtyDaysAgo;
+
+    let totalSynced = 0;
+    let chatIndex = 0;
+
+    for (const chat of chats) {
+      chatIndex++;
+
+      const chatName = chat.name || chat.id._serialized;
+      if (!chatName) continue;
+
+      reportProgress({
+        status: 'syncing',
+        currentChat: chatIndex,
+        totalChats: chats.length,
+        messageCount: totalSynced,
+        chatName,
+      });
+
+      upsertChat({
+        id: chat.id._serialized,
+        name: chatName,
+        is_group: chat.isGroup ? 1 : 0,
+        last_message_time: chat.timestamp || 0,
+      });
+
+      try {
+        const messages = await chat.fetchMessages({ limit: 100 });
+
+        for (const msg of messages) {
+          if (msg.timestamp < cutoffTimestamp) continue;
+
+          insertMessage({
+            id: msg.id._serialized,
+            chat_id: msg.from,
+            chat_name: chatName,
+            body: msg.body || '',
+            timestamp: msg.timestamp,
+            from_me: msg.fromMe ? 1 : 0,
+            is_group: chat.isGroup ? 1 : 0,
+          });
+          totalSynced++;
+        }
+      } catch {
+        // Skip chats that fail to fetch
+      }
+    }
+
+    reportProgress({
+      status: 'done',
+      currentChat: chats.length,
+      totalChats: chats.length,
+      messageCount: totalSynced,
+    });
+
+    return { chatCount: chats.length, messageCount: totalSynced };
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    reportProgress({
+      status: 'error',
+      currentChat: 0,
+      totalChats: 0,
+      messageCount: 0,
+      error: errorMsg,
+    });
+    throw error;
+  }
 }
