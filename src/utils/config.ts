@@ -13,28 +13,24 @@ const DEFAULT_CONFIG: OneWayConfig = {
 let cachedConfig: OneWayConfig | null = null;
 
 /**
- * Parse JSONC (JSON with comments) by stripping comments
+ * Parse JSONC (JSON with comments) using Bun's native parser
  */
 function parseJsonc(content: string): unknown {
-  // Remove single-line comments (// ...)
-  const withoutSingleLine = content.replace(/\/\/.*$/gm, '');
-  // Remove multi-line comments (/* ... */)
-  const withoutComments = withoutSingleLine.replace(/\/\*[\s\S]*?\*\//g, '');
-  return JSON.parse(withoutComments);
+  return Bun.JSONC.parse(content);
 }
 
 /**
  * Find and load the config file from possible locations
+ * Priority: home dir > XDG config > local override
  */
 function findConfigFile(): string | null {
   const possiblePaths = [
-    // Current working directory
-    join(process.cwd(), 'oneway.jsonc'),
-    // Home directory
+    // Primary: ~/.oneway/
     join(homedir(), '.oneway', 'oneway.jsonc'),
+    // XDG fallback: ~/.config/oneway/
     join(homedir(), '.config', 'oneway', 'oneway.jsonc'),
-    // Project root (for development)
-    join(import.meta.dir, '../../..', 'oneway.jsonc'),
+    // Local override (CWD)
+    join(process.cwd(), 'oneway.jsonc'),
   ];
 
   for (const configPath of possiblePaths) {

@@ -1,10 +1,11 @@
 import { Database } from 'bun:sqlite';
 import { existsSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
+import { homedir } from 'os';
 
-// Get database path from environment or use default
+// Get database path from environment or use default (~/.oneway/whatsapp.db)
 const getDbPath = (): string => {
-  const path = process.env.ONEWAY_DB_PATH || './data/whatsapp.db';
+  const path = process.env.ONEWAY_DB_PATH || join(homedir(), '.oneway', 'whatsapp.db');
   // Ensure directory exists
   const dir = dirname(path);
   if (!existsSync(dir)) {

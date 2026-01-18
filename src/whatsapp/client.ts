@@ -2,28 +2,18 @@ import { Client, LocalAuth } from 'whatsapp-web.js';
 import qrcode from 'qrcode-terminal';
 import chalk from 'chalk';
 import { existsSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
+import { homedir } from 'os';
 
 let client: Client | null = null;
 let isReady = false;
 
-// Get auth path from environment or use default
+// Get auth path from environment or use default (~/.oneway/.wwebjs_auth)
 const getAuthPath = (): string => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const envPath = process.env.ONEWAY_AUTH_PATH;
-
-  if (envPath) {
-    return envPath;
+  if (process.env.ONEWAY_AUTH_PATH) {
+    return process.env.ONEWAY_AUTH_PATH;
   }
-
-  // Production: use home directory
-  if (isProduction) {
-    const home = process.env.HOME || process.env.USERPROFILE || '~';
-    return `${home}/.oneway/.wwebjs_auth`;
-  }
-
-  // Development: use local directory
-  return './data/.wwebjs_auth';
+  return join(homedir(), '.oneway', '.wwebjs_auth');
 };
 
 export async function initClient(): Promise<Client> {

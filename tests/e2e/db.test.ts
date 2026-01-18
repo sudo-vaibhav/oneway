@@ -1,6 +1,7 @@
 import { test, expect, describe, beforeEach, afterEach } from 'bun:test';
 import { Database } from 'bun:sqlite';
-import { unlinkSync, existsSync } from 'node:fs';
+import { unlinkSync, existsSync, mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
 
 const TEST_DB_PATH = './data/test-e2e.db';
 
@@ -8,6 +9,11 @@ describe('Database E2E Tests', () => {
   let db: Database;
 
   beforeEach(() => {
+    // Ensure test directory exists
+    const dir = dirname(TEST_DB_PATH);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
     // Clean up any existing test database
     if (existsSync(TEST_DB_PATH)) {
       unlinkSync(TEST_DB_PATH);

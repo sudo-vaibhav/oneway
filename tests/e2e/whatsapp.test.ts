@@ -1,13 +1,14 @@
 import { test, expect, describe, beforeAll, afterAll } from 'bun:test';
 import { existsSync, writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
+import { homedir } from 'os';
 import { initClient, closeClient, getClient } from '../../src/whatsapp/client';
 import { syncMessages } from '../../src/whatsapp/sync';
 import { sendMessage } from '../../src/commands/send';
 import { searchMessages } from '../../src/commands/search';
 import { applyMessageSuffix, clearConfigCache } from '../../src/utils/config';
 
-const AUTH_PATH = './data/.wwebjs_auth/session';
+const AUTH_PATH = join(homedir(), '.oneway', '.wwebjs_auth', 'session');
 const SKIP_E2E = process.env.SKIP_E2E === 'true';
 
 // Check authentication before running
@@ -23,7 +24,6 @@ Or skip: SKIP_E2E=true bun test
 
 describe.skipIf(SKIP_E2E)('WhatsApp E2E Tests', () => {
   beforeAll(async () => {
-    process.env.ONEWAY_AUTH_PATH = './data/.wwebjs_auth';
     await initClient();
     await syncMessages();
   }, 60000);
